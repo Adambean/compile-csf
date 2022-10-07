@@ -1,0 +1,12 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "files.eol": "\n",
+        "files.trimTrailingWhitespace": true,
+        "html.format.endWithNewline": true
+    }
+}
