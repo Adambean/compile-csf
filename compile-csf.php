@@ -2,7 +2,6 @@
 
 /**
  * Configuration compiler for ConfigServer Firewall & LFD
- * Version 0.0.1
  * -----------------------------------------------------------------------------
  * By Adam "Adambean" Reece - www.reece.wales
  * https://github.com/Adambean/compile-csf
