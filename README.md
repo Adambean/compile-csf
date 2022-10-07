@@ -13,7 +13,7 @@ These instructions will get you a copy of the project up and running on your loc
 Requirements for running this tool from a management station:
 
 * Any system that can run PHP-CLI will do. (Even Windows.)
-* [PHP](https://www.php.net): Available to most Linux distributions via `apt-get` or `yum`. You don't need anything web related, but you will need the command line interface.
+* [PHP](https://www.php.net) 7.2 or later: Available to most Linux distributions via `apt-get` or `yum`. You don't need anything web related, but you will need the command line interface.
 * [Secure Shell 2 extension for PHP](http://php.net/manual/en/book.ssh2.php): Required for deployment.
 * [YAML extension for PHP](http://php.net/manual/en/book.yaml.php): Optional, but allows your server list to be in YAML format. (Otherwise it'll have to be JSON.).
 
@@ -169,7 +169,7 @@ This is fundamental to much of this tool's useful functionality as per the SSH d
 
 ### sshFingerprint
 
-A [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash sum of the SSH daemon's public key in hexadecimal notation.
+A single or list of [SHA-1](https://en.wikipedia.org/wiki/SHA-1) hash sum of the SSH daemon's public key in hexadecimal notation. This can either be a single string or an array of strings if your server has multiple host keys (e.g. supports both RSA and ED25519).
 
 Use the included `get-ssh-fingerprint.php` CLI tool to help you retrieve this, for example:
 
