@@ -724,6 +724,57 @@ foreach ($servers as $s => $server) {
                             ]);
                             break;
 
+                        case "almalinux":
+                        case "almalinux8":
+                            $server["csfConf"] = array_merge($server["csfConf"], [
+                                "CSF"               => "/usr/sbin/csf",
+
+                                "IPTABLES"          => "/usr/sbin/iptables",
+                                "IPTABLES_SAVE"     => "/usr/sbin/iptables-save",
+                                "IPTABLES_RESTORE"  => "/usr/sbin/iptables-restore",
+                                "IP6TABLES"         => "/usr/sbin/ip6tables",
+                                "IP6TABLES_SAVE"    => "/usr/sbin/ip6tables-save",
+                                "IP6TABLES_RESTORE" => "/usr/sbin/ip6tables-restore",
+                                "MODPROBE"          => "/usr/sbin/modprobe",
+                                "IFCONFIG"          => "/usr/sbin/ifconfig",
+                                "SENDMAIL"          => "/usr/sbin/sendmail",
+                                "PS"                => "/usr/bin/ps",
+                                "VMSTAT"            => "/usr/bin/vmstat",
+                                "NETSTAT"           => "/usr/bin/netstat",
+                                "LS"                => "/usr/bin/ls",
+                                "MD5SUM"            => "/usr/bin/md5sum",
+                                "TAR"               => "/usr/bin/tar",
+                                "CHATTR"            => "/usr/bin/chattr",
+                                "UNZIP"             => "/usr/bin/unzip",
+                                "GUNZIP"            => "/usr/bin/gunzip",
+                                "DD"                => "/usr/bin/dd",
+                                "TAIL"              => "/usr/bin/tail",
+                                "GREP"              => "/usr/bin/grep",
+                                "IPSET"             => "/usr/sbin/ipset",
+                                "SYSTEMCTL"         => "/usr/bin/systemctl",
+                                "HOST"              => "/usr/bin/host",
+                                "IP"                => "/usr/sbin/ip",
+
+                                "HTACCESS_LOG"      => "/usr/local/apache/logs/error_log",
+                                "MODSEC_LOG"        => "/usr/local/apache/logs/error_log",
+                                "SSHD_LOG"          => "/var/log/secure",
+                                "SU_LOG"            => "/var/log/secure",
+                                "FTPD_LOG"          => "/var/log/messages",
+                                "SMTPAUTH_LOG"      => "/var/log/exim_mainlog",
+                                "SMTPRELAY_LOG"     => "/var/log/exim_mainlog",
+                                "POP3D_LOG"         => "/var/log/maillog",
+                                "IMAPD_LOG"         => "/var/log/maillog",
+                                "CPANEL_LOG"        => "/usr/local/cpanel/logs/login_log",
+                                "CPANEL_ACCESSLOG"  => "/usr/local/cpanel/logs/access_log",
+                                "SCRIPT_LOG"        => "/var/log/exim_mainlog",
+                                "IPTABLES_LOG"      => "/var/log/messages",
+                                "SUHOSIN_LOG"       => "/var/log/messages",
+                                "BIND_LOG"          => "/var/log/messages",
+                                "SYSLOG_LOG"        => "/var/log/messages",
+                                "WEBMIN_LOG"        => "/var/log/secure",
+                            ]);
+                            break;
+
                         case "debian":
                         case "debian8":
                             $server["csfConf"] = array_merge($server["csfConf"], [
