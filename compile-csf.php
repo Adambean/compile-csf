@@ -621,10 +621,9 @@ foreach ($servers as $s => $server) {
 
                     // OS specific
                     switch ($server["os"]) {
-                        case "centos":
                         case "centos6":
-                        case "rhel":
-                        case "cloudlinux":
+                        case "rhel6":
+                        case "cloudlinux6":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -674,7 +673,9 @@ foreach ($servers as $s => $server) {
                             ]);
                             break;
 
+                        case "rhel7":
                         case "centos7":
+                        case "cloudlinux7":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -724,8 +725,10 @@ foreach ($servers as $s => $server) {
                             ]);
                             break;
 
-                        case "almalinux":
+                        case "rhel8":
+                        case "centos8":
                         case "almalinux8":
+                        case "cloudlinux8":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -775,8 +778,8 @@ foreach ($servers as $s => $server) {
                             ]);
                             break;
 
-                        case "debian":
                         case "debian8":
+                        case "ubuntu-16.04":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -826,6 +829,7 @@ foreach ($servers as $s => $server) {
                         case "debian9":
                         case "debian10":
                         case "debian11":
+                        case "ubuntu-22.04":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -854,54 +858,6 @@ foreach ($servers as $s => $server) {
                                 "SYSTEMCTL"         => "/usr/bin/systemctl",
                                 "HOST"              => "/usr/bin/host",
                                 "IP"                => "/usr/sbin/ip",
-
-                                "HTACCESS_LOG"      => "/var/log/apache2/error.log",
-                                "MODSEC_LOG"        => "/var/log/apache2/error.log",
-                                "SSHD_LOG"          => "/var/log/auth.log",
-                                "SU_LOG"            => "/var/log/messages",
-                                "FTPD_LOG"          => "/var/log/messages",
-                                "SMTPAUTH_LOG"      => "/var/log/exim4/mainlog",
-                                "SMTPRELAY_LOG"     => "/var/log/exim4/mainlog",
-                                "POP3D_LOG"         => "/var/log/exim4/mainlog",
-                                "IMAPD_LOG"         => "/var/log/exim4/mainlog",
-                                "IPTABLES_LOG"      => "/var/log/messages",
-                                "SUHOSIN_LOG"       => "/var/log/messages",
-                                "BIND_LOG"          => "/var/log/messages",
-                                "SYSLOG_LOG"        => "/var/log/syslog",
-                                "WEBMIN_LOG"        => "/var/log/auth.log",
-                            ]);
-                            break;
-
-                        case "ubuntu":
-                        case "ubuntu-16.04":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
-                                "CSF"               => "/usr/sbin/csf",
-
-                                "IPTABLES"          => "/sbin/iptables",
-                                "IPTABLES_SAVE"     => "/sbin/iptables-save",
-                                "IPTABLES_RESTORE"  => "/sbin/iptables-restore",
-                                "IP6TABLES"         => "/sbin/ip6tables",
-                                "IP6TABLES_SAVE"    => "/sbin/ip6tables-save",
-                                "IP6TABLES_RESTORE" => "/sbin/ip6tables-restore",
-                                "MODPROBE"          => "/sbin/modprobe",
-                                "IFCONFIG"          => "/sbin/ifconfig",
-                                "SENDMAIL"          => "/usr/sbin/sendmail",
-                                "PS"                => "/bin/ps",
-                                "VMSTAT"            => "/usr/bin/vmstat",
-                                "NETSTAT"           => "/bin/netstat",
-                                "LS"                => "/bin/ls",
-                                "MD5SUM"            => "/usr/bin/md5sum",
-                                "TAR"               => "/bin/tar",
-                                "CHATTR"            => "/usr/bin/chattr",
-                                "UNZIP"             => "/usr/bin/unzip",
-                                "GUNZIP"            => "/bin/gunzip",
-                                "DD"                => "/bin/dd",
-                                "TAIL"              => "/usr/bin/tail",
-                                "GREP"              => "/bin/grep",
-                                "IPSET"             => "/sbin/ipset",
-                                "SYSTEMCTL"         => "/bin/systemctl",
-                                "HOST"              => "/usr/bin/host",
-                                "IP"                => "/sbin/ip",
 
                                 "HTACCESS_LOG"      => "/var/log/apache2/error.log",
                                 "MODSEC_LOG"        => "/var/log/apache2/error.log",
