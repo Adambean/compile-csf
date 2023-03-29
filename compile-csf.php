@@ -12,6 +12,10 @@
  *
  * Please check the corresponding "README.md" for instructions on using this.
  *
+ * Reminder for new operating system releases: To build a pre-defined set of
+ * binary pathnames, use the command in "detect-bins.sh" from a shell on that
+ * system.
+ * -----------------------------------------------------------------------------
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License.
  *
@@ -895,15 +899,15 @@ foreach ($servers as $s => $server) {
                             "HOST"              => "host",
                             "IP"                => "ip",
                         ] as $bin => $binFile) {
-                            if (false === ($binWhich = @ssh2_exec($linkSsh, sprintf("which %s", $binFile)))) {
+                            if (false === ($binLocator = @ssh2_exec($linkSsh, sprintf("type -P %s", $binFile)))) {
                                 printf("- - - Binary \"%s\" search failed. Using default location instead...\n", $bin);
                                 continue;
                             }
 
-                            stream_set_blocking($binWhich, true);
-                            $binWhichOut = ssh2_fetch_stream($binWhich, SSH2_STREAM_STDIO);
+                            stream_set_blocking($binLocator, true);
+                            $binLocatorOut = ssh2_fetch_stream($binLocator, SSH2_STREAM_STDIO);
 
-                            if (!($binLocation = trim(stream_get_contents($binWhichOut)))) {
+                            if (!($binLocation = trim(stream_get_contents($binLocatorOut)))) {
                                 printf("- - - Binary \"%s\" not found. It might not be installed...\n", $bin);
                                 continue;
                             }
