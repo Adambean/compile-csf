@@ -32,7 +32,7 @@ Requirements for servers you are deploying a centralised configuration to:
 
 The following functionality won't be available to any server of which has an unconnectable or untrustworthy SSH daemon, or if SSH authentication cannot be established:
 
-* Determining the location of important binaries via `which`.
+* Determining the location of important binaries automatically via `type -P`.
 * Downloading server specific allow/deny lists.
 * Uploading compiled configurations.
 * Restarting CSF+LFD automatically.
@@ -129,17 +129,26 @@ This can vary even in different versions of the same distribution, for example t
 
 Choices are currently:
 
+* **almalinux8**: AlmaLinux 8.x
 * **centos6**: CentOS 6.x
 * **centos7**: CentOS 7.x
-* **cloudlinux**: CloudLinux OS
+* **centos8**: CentOS 8.x
+* **cloudlinux6**: CloudLinux OS on RHEL 6.x compatible
+* **cloudlinux7**: CloudLinux OS on RHEL 7.x compatible
+* **cloudlinux8**: CloudLinux OS on RHEL 8.x compatible
 * **debian8**: Debian 8 "Jessie"
 * **debian9**: Debian 9 "Stretch"
-* **rhel**: Red Hat Enterprise Linux
+* **debian10**: Debian 10 "Buster"
+* **debian11**: Debian 11 "Bullseye"
+* **rhel6**: Red Hat Enterprise Linux 6.x
+* **rhel7**: Red Hat Enterprise Linux 7.x
+* **rhel8**: Red Hat Enterprise Linux 8.x
 * **ubuntu-16.04**: Ubuntu 16.04 LTS "Xenial"
+* **ubuntu-22.04**: Ubuntu 22.04 LTS "Jammy Jellyfish"
 
-These choices all have their binary locations hard-coded as they will very rarely move unless you've done a distribution upgrade. (More common on Debian and forks.) That being said this tool is capable of using the `which` binary providing it is available to determine the exact location of all required binaries.
+These choices all have their binary locations hard-coded as they will very rarely move unless you've done a distribution upgrade. (More common on Debian and forks.) That being said this tool is capable of using the `type -P` binary providing it is available to determine the exact location of all required binaries.
 
-The use of `which` can be disabled by defining the "**explicitBins**" option as `true`. This means the tool doesn't have to spend as much time on each server, but limits your choice to the hard-coded options.
+The use of `type -P` can be disabled by defining the "**explicitBins**" option as `true`. This means the tool doesn't have to spend as much time on each server, but limits your choice to the hard-coded options.
 
 You can of course hard-code your own Linux distribution/version if you like, and as I don't have much time to trawl through each distribution, this would be a welcome contribution. Check in the `Build specifically for this server using a template` block, specifically the `OS specific` section of the tool's source code for this.
 
