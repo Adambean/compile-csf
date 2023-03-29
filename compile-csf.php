@@ -824,6 +824,8 @@ foreach ($servers as $s => $server) {
                             break;
 
                         case "debian9":
+                        case "debian10":
+                        case "debian11":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
