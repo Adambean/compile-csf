@@ -29,25 +29,21 @@
  */
 
 if (!is_array($argv) || $argc < 2) {
-    printf("[Error] No host address specified.\n");
+    printf("[Error] Host address not defined.\n");
     exit(1);
 }
 
 $serverHost = null;
 if (!$serverHost = trim($argv[1])) {
-    printf("[Error] Empty host address specified.\n");
+    printf("[Error] Host address not defined.\n");
     exit(1);
 }
 
 $serverPort = 22;
-if ($argc >= 3 && !$serverPort = intval($argv[2])) {
+if ($argc >= 3 && !($serverPort = intval($argv[2]))) {
     $serverPort = 22;
 }
 
-if (!is_int($serverPort) || $serverPort < 1 || $serverPort > 65535) {
-    printf("[Error] Port number must be an integer from 1 to 65535 inclusive.\n");
-    exit(1);
-}
 
 
 // Show server name
@@ -56,23 +52,30 @@ printf("%s:%d:\n\n", $serverHost, $serverPort);
 // << SSH connection: Open
 printf("Establishing SSH link...\n");
 
-$linkSsh        = null;
-$linkSshAuthed  = false;
+/** @var resource|null $linkSsh SSH session handle. */
+$linkSsh = null;
+/** @var bool $linkSshAuthed SSH session has authenticated. */
+$linkSshAuthed = false;
+
+if ($serverPort < 1 || $serverPort > 65535) {
+    printf("[Error] SSH port (%d) invalid.\n", $serverPort);
+    exit(1);
+}
 
 try {
     if (!function_exists("ssh2_connect")) {
-        throw new \Exception("SSH2 for PHP is not installed.\n");
+        throw new \Exception("SSH for PHP is not installed.\n");
     }
 
     if (!$linkSsh || !is_resource($linkSsh)) {
         $linkSsh = null;
-        $linkSsh = @ssh2_connect($serverHost, $serverPort);
+        $linkSsh = ssh2_connect($serverHost, $serverPort);
     }
 
     // Failed completely...
     if (!$linkSsh || !is_resource($linkSsh)) {
         $linkSsh = null;
-        printf("[Error] SSH connection couldn't be established!\n");
+        printf("[Error] SSH connection couldn't be established.\n");
         exit(1);
     }
 } catch (\Exception $e) {
@@ -81,7 +84,7 @@ try {
 }
 
 if (!$sshFingerprint = trim(ssh2_fingerprint($linkSsh, SSH2_FINGERPRINT_SHA1 | SSH2_FINGERPRINT_HEX))) {
-    printf("[Error] SSH server did not return a fingerprint!\n");
+    printf("[Error] SSH server did not return a fingerprint.\n");
     exit(1);
 }
 
