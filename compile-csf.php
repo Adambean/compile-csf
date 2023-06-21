@@ -99,6 +99,7 @@ function showUsage(?int $exitCode = 0): void
     printf("\t--sshkeypublic=file         SSH public key file to use for authentication. (OpenSSH format.)\n");
     printf("\t--sshkeyprivate=file        SSH private key file to use for authentication. (OpenSSH format.)\n");
     printf("\t--sshkeypassword=passowrd   SSH private key password if encrypted. (This will show in PS!)\n");
+    printf("\t--sshkeypasswordfile=file   SSH private key password if encrypted from a file. (This will show in PS!)\n");
     printf("\n");
     printf("\t--servers=name1,name2,...   Only action specific servers. (Split multiple with a comma.)\n");
     printf("\t--serversfiletype=type      Server list file type. (Type can be json, yml, or yaml.)\n");
@@ -136,39 +137,46 @@ if (isset($argv) && is_array($argv) && $argv) {
                     $argKeyType = substr($argSwitch, 6);
 
                     if (!($argSshKeyFile = trim($argValue))) {
-                        printf("[Error] No %s SSH key file specified.\n", $argKeyType);
+                        printf("[Error] %s SSH key file not specified.\n", $argKeyType);
                         showUsage(1);
                     }
 
-                    if (!file_exists($argSshKeyFile)) {
-                        printf("[Error] No %s SSH key file not found.\n", $argKeyType);
+                    if (!file_exists($argSshKeyFile) || !is_file($argSshKeyFile) || !is_readable($argSshKeyFile)) {
+                        printf("[Error] %s SSH key file not found, not a file, or not readable.\n", $argKeyType);
                         showUsage(1);
                     }
-
-                    if (!is_file($argSshKeyFile)) {
-                        printf("[Error] No %s SSH key file is not a file.\n", $argKeyType);
-                        showUsage(1);
-                    }
-
-                    /*
-                    if (!is_readable($argSshKeyFile)) {
-                        printf("[Error] No %s SSH key file is not readable.\n", $argKeyType);
-                        showUsage(1);
-                    }
-                     */
 
                     $sshKeyFileVar  = sprintf("sshKeyFile%s", ucfirst($argKeyType));
                     $$sshKeyFileVar = $argSshKeyFile;
                     printf("SSH %s key file defined as \"%s\".\n", $argKeyType, $argSshKeyFile);
                     break;
 
-                case "sshkeyfilepassword":
+                case "sshkeypassword":
                     if (!($sshKeyFilePassword = trim($argValue))) {
-                        printf("[Error] No servers specified.\n");
+                        printf("[Error] SSH key password not specified.\n");
                         showUsage(1);
                     }
 
                     printf("SSH private key password set.\n");
+                    break;
+
+                case "sshkeypasswordfile":
+                    if (!($sshKeyFilePasswordFile = trim($argValue))) {
+                        printf("[Error] SSH key password file not specified.\n");
+                        showUsage(1);
+                    }
+
+                    if (!file_exists($sshKeyFilePasswordFile) || !is_file($sshKeyFilePasswordFile) || !is_readable($sshKeyFilePasswordFile)) {
+                        printf("[Error] SSH key password file not found, not a file, or not readable.\n");
+                        showUsage(1);
+                    }
+
+                    if (!($sshKeyFilePassword = file_get_contents($sshKeyFilePasswordFile))) {
+                        printf("[Error] SSH key password not specified in file.\n");
+                        showUsage(1);
+                    }
+
+                    printf("SSH private key password set from file.\n");
                     break;
 
                 case "nopageant":
@@ -178,13 +186,13 @@ if (isset($argv) && is_array($argv) && $argv) {
 
                 case "servers":
                     if (!($argServersStr = trim($argValue))) {
-                        printf("[Error] No servers specified.\n");
+                        printf("[Error] Servers not specified.\n");
                         showUsage(1);
                     }
 
                     $argServers = explode(',', $argServersStr);
-                    if (count($argServers) < 1) {
-                        printf("[Error] No servers specified.\n");
+                    if (empty($argServers)) {
+                        printf("[Error] Servers not specified.\n");
                         showUsage(1);
                     }
 
@@ -221,12 +229,12 @@ if (isset($argv) && is_array($argv) && $argv) {
 
                 case "serverfiletype":
                     if (!$argValue) {
-                        printf("[Error] No servers file type specified.\n");
+                        printf("[Error] Servers file type not specified.\n");
                         showUsage(1);
                     }
 
                     if (!in_array($argValue, $serversFileTypes)) {
-                        printf("[Error] Unknown servers file type \"%s\".\n", $argValue);
+                        printf("[Error] Servers file type \"%s\" invalid.\n", $argValue);
                         showUsage(1);
                     }
 
@@ -235,11 +243,11 @@ if (isset($argv) && is_array($argv) && $argv) {
                     break;
 
                 default:
-                    printf("Unknown switch \"%s\".\n\n", $argSwitch);
+                    printf("Switch \"%s\" invalid.\n\n", $argSwitch);
                     showUsage(1);
             }
         } else {
-            printf("Unknown argument #%d \"%s\".\n\n", $i, $arg);
+            printf("Argument #%d \"%s\" invalid.\n\n", $i, $arg);
             showUsage(1);
         }
     }
@@ -254,7 +262,7 @@ if (
         || (!($sshKeyFilePrivate = trim($sshKeyFilePrivate)))
     )
 ) {
-    printf("[Error] No viable SSH authentication method available.\nPlease use a key agent (Pageant) or key files (OpenSSH format).\n");
+    printf("[Error] Viable SSH authentication method not available.\nPlease use a key agent (Pageant) or key files (OpenSSH format).\n");
     showUsage(1);
 }
 
@@ -279,7 +287,7 @@ printf("\nLoading servers...\n");
 
 $serversFileType = trim($serversFileType);
 if (!in_array($serversFileType, $serversFileTypes)) {
-    printf("[Error] Unknown servers file type \"%s\".\n", $serversFileType);
+    printf("[Error] Servers file type \"%s\" invalid.\n", $serversFileType);
     exit(1);
 }
 
@@ -288,8 +296,8 @@ $serversFile = sprintf("%s.%s", substr(__FILE__, 0, strrpos(__FILE__, '.')), $se
 /** @var string $serversFileSample Servers list sample file. */
 $serversFileSample = sprintf("%s.sample.%s", substr(__FILE__, 0, strrpos(__FILE__, '.')), $serversFileType);
 
-if (!file_exists($serversFile) || !is_file($serversFile)) {
-    printf("[Error] Server list file \"%s\" not found.\n", $serversFile);
+if (!file_exists($serversFile) || !is_file($serversFile) || !is_readable($serversFile)) {
+    printf("[Error] Server list file \"%s\" not found, not a file, or not readable.\n", $serversFile);
 
     if (file_exists($serversFileSample) && is_file($serversFileSample)) {
         printf("I see that the sample server list file \"%s\" exists though.\nYou should make a copy of this as \"%s\" then configure it.\n", $serversFileSample, $serversFile);
@@ -297,18 +305,6 @@ if (!file_exists($serversFile) || !is_file($serversFile)) {
 
     exit(1);
 }
-
-if (!is_file($serversFile)) {
-    printf("[Error] Server list file \"%s\" is not a file.\n", $serversFile);
-    exit(1);
-}
-
-/*
-if (!is_readable($serversFile)) {
-    printf("[Error] Server list file \"%s\" is not readable.\n", $serversFile);
-    exit(1);
-}
- */
 
 /** @var array<string, array<string, mixed>> $servers Servers list. */
 $servers = [];
@@ -330,12 +326,12 @@ switch ($serversFileType) {
         break;
 
     default:
-        printf("[Error] Unknown servers file type \"%s\".\n", $serversFileType);
+        printf("[Error] Servers file type \"%s\" invalid.\n", $serversFileType);
         exit(1);
 }
 
 if (($serverCount = count($servers)) < 1) {
-    printf("[Error] No servers in configuration.\n");
+    printf("[Error] Servers configuration is empty.\n");
     exit(1);
 }
 
@@ -372,6 +368,8 @@ printf("\nProcessing servers...\n");
 
 /** @var resource|null $linkSsh SSH session handle. */
 $linkSsh = null;
+/** @var bool $linkSshAuthed SSH session has authenticated. */
+$linkSshAuthed = false;
 /** @var resource|null $linkSftp SFTP session handle. */
 $linkSftp = null;
 
@@ -394,7 +392,7 @@ foreach ($servers as $s => $server) {
         printf("- Establishing SSH and SFTP link...\n");
 
         if (isset($linkSsh) && $linkSsh && is_resource($linkSsh)) {
-            if (false === @ssh2_exec($linkSsh, "exit")) {
+            if (false === ssh2_exec($linkSsh, "exit")) {
                 printf("- SSH connection to previous server did not close cleanly.\n");
             }
 
@@ -404,35 +402,35 @@ foreach ($servers as $s => $server) {
         }
 
         if (empty($server["hostname"])) {
-            throw new \UnexpectedValueException("Host name not defined!");
+            throw new \UnexpectedValueException("Host name not defined.");
         }
 
         if (!($server["hostname"] = trim($server["hostname"]))) {
-            throw new \UnexpectedValueException("Host name empty!");
+            throw new \UnexpectedValueException("Host name not specified.");
         }
 
         if (empty($server["portSsh"])) {
-            throw new \UnexpectedValueException("SSH port not defined!");
+            throw new \UnexpectedValueException("SSH port not defined.");
         }
 
         $server["portSsh"] = intval($server["portSsh"]);
         if ($server["portSsh"] < 1 || $server["portSsh"] > 65535) {
-            throw new \UnexpectedValueException(sprintf("SSH port invalid! (%d)", $server["portSsh"]));
+            throw new \UnexpectedValueException(sprintf("SSH port %d invalid.", $server["portSsh"]));
         }
 
         if (empty($server["sshFingerprint"])) {
-            throw new \UnexpectedValueException("SSH fingerprint not defined!");
+            throw new \UnexpectedValueException("SSH fingerprint not defined.");
         }
 
         if (
             (is_array($server["sshFingerprint"]) && empty($server["sshFingerprint"]))
             || (is_string($server["sshFingerprint"]) && !($server["sshFingerprint"] = trim($server["sshFingerprint"])))
         ) {
-            throw new UnexpectedValueException("SSH fingerprint empty!");
+            throw new UnexpectedValueException("SSH fingerprint not specified.");
         }
 
         foreach (["hostname", "ipv6", "ipv4"] as $k) {
-            if (is_resource($linkSsh = @ssh2_connect($server[$k], $server["portSsh"]))) {
+            if (is_resource($linkSsh = ssh2_connect($server[$k], $server["portSsh"]))) {
                 break; // Connection established
             }
         }
@@ -444,7 +442,7 @@ foreach ($servers as $s => $server) {
         printf("- - SSH connection established.\n");
 
         if (!($sshFingerprint = trim(ssh2_fingerprint($linkSsh, SSH2_FINGERPRINT_SHA1 | SSH2_FINGERPRINT_HEX)))) {
-            throw new \RuntimeException("SSH server did not return a fingerprint!");
+            throw new \RuntimeException("SSH server did not return a fingerprint.");
         }
 
         if (
@@ -452,7 +450,7 @@ foreach ($servers as $s => $server) {
             || (is_string($server["sshFingerprint"]) && $sshFingerprint != $server["sshFingerprint"])
         ) {
             throw new \RuntimeException(sprintf(
-                "SSH fingerprint mismatch! (Presented with %s, but should be %s.)",
+                "SSH fingerprint mismatch. (Presented with %s, but should be %s.)",
                 $sshFingerprint,
                 is_array($server["sshFingerprint"])
                     ? implode("/", $server["sshFingerprint"])
@@ -461,16 +459,30 @@ foreach ($servers as $s => $server) {
         }
         printf("- - SSH fingerprint verified. (%s)\n", $sshFingerprint);
 
-        if ($sshUsePageant && @ssh2_auth_agent($linkSsh, "root")) {
-            printf("- - SSH connection authenticated. (Key agent.)\n");
-        } elseif ($sshKeyFilePublic && $sshKeyFilePrivate && @ssh2_auth_pubkey_file($linkSsh, "root", $sshKeyFilePublic, $sshKeyFilePrivate, $sshKeyFilePassword)) {
-            printf("- - SSH connection authenticated. (Key pair.)\n");
-        } else {
-            throw new \RuntimeException("SSH connection authentication failed! (No method available.)");
+        if (!$linkSshAuthed && $sshUsePageant) {
+            if (ssh2_auth_agent($linkSsh, "root")) {
+                printf("- - SSH connection authenticated. (Key agent.)\n");
+                $linkSshAuthed = true;
+            } else {
+                printf("- - SSH connection failed. (Key agent.)\n");
+            }
+        }
+
+        if (!$linkSshAuthed && $sshKeyFilePublic && $sshKeyFilePrivate) {
+            if (ssh2_auth_pubkey_file($linkSsh, "root", $sshKeyFilePublic, $sshKeyFilePrivate, $sshKeyFilePassword)) {
+                printf("- - SSH connection authenticated. (Key pair.)\n");
+                $linkSshAuthed = true;
+            } else {
+                printf("- - SSH connection failed. (Key pair.)\n");
+            }
+        }
+
+        if (!$linkSshAuthed) {
+            throw new \RuntimeException("SSH connection authentication failed. (No method available.)");
         }
 
         if (!($linkSftp = ssh2_sftp($linkSsh))) {
-            throw new \RuntimeException("SFTP connection failed!");
+            throw new \RuntimeException("SFTP connection failed.");
         }
 
         printf("- - SFTP connection established.\n");
@@ -495,7 +507,7 @@ foreach ($servers as $s => $server) {
         // << Directory: CSF (remote)
         $directoryCsfR = sprintf("ssh2.sftp://%s%s", $linkSftp, $directoryCsf);
         if (!is_dir($directoryCsfR)) {
-            printf("- CSF directory (remote) not found! Is CSF installed on this server?\n");
+            printf("- CSF directory (remote) not found. Is CSF installed on this server?\n");
             continue;
         }
         // >> Directory: CSF (remote)
@@ -829,6 +841,7 @@ foreach ($servers as $s => $server) {
                         case "debian9":
                         case "debian10":
                         case "debian11":
+                        case "debian12":
                         case "ubuntu-22.04":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
@@ -908,7 +921,7 @@ foreach ($servers as $s => $server) {
                             "HOST"              => "host",
                             "IP"                => "ip",
                         ] as $bin => $binFile) {
-                            if (false === ($binLocator = @ssh2_exec($linkSsh, sprintf("type -P %s", $binFile)))) {
+                            if (false === ($binLocator = ssh2_exec($linkSsh, sprintf("type -P %s", $binFile)))) {
                                 printf("- - - Binary \"%s\" search failed. Using default location instead...\n", $bin);
                                 continue;
                             }
@@ -982,12 +995,12 @@ foreach ($servers as $s => $server) {
 
                 printf("- - Uploading: %s\n", $c);
                 if (!ssh2_scp_send($linkSsh, $lPath, $rPath, 0640)) {
-                    printf("- - - Upload failed!\n");
+                    printf("- - - Upload failed.\n");
                     continue;
                 }
 
                 if (!ssh2_sftp_chmod($linkSftp, $rPath, 0640)) {
-                    printf("- - - Permissions definition failed!\n");
+                    printf("- - - Permissions definition failed.\n");
                     continue;
                 }
             }
@@ -1002,14 +1015,14 @@ foreach ($servers as $s => $server) {
                 printf("- - Binary \"CSF\" search failed. Using default location instead...\n");
             }
 
-            if (false === ($csfRestart = @ssh2_exec($linkSsh, sprintf("%s -ra", $binCsf)))) {
-                throw new \RuntimeException("Restart failed! CSF might not be installed...");
+            if (false === ($csfRestart = ssh2_exec($linkSsh, sprintf("%s -ra", $binCsf)))) {
+                throw new \RuntimeException("Restart failed. CSF might not be installed...");
             }
 
             stream_set_blocking($csfRestart, true);
             $csfRestartOut = ssh2_fetch_stream($csfRestart, SSH2_STREAM_STDIO);
             if (!($csfRestartResult = trim(stream_get_contents($csfRestartOut)))) {
-                throw new \RuntimeException("Restart failed! No response from service...");
+                throw new \RuntimeException("Restart failed. No response from service...");
             }
         }
         // >> Restart: CSF/LFD
@@ -1017,13 +1030,14 @@ foreach ($servers as $s => $server) {
         // << SSH connection: Close
         printf("- Closing SSH and SFTP link...\n");
         if ($linkSsh && is_resource($linkSsh)) {
-            if (false === @ssh2_exec($linkSsh, "exit")) {
-                printf("- - SSH connection did not close cleanly!\n");
+            if (false === ssh2_exec($linkSsh, "exit")) {
+                printf("- - SSH connection did not close cleanly.\n");
             } else {
                 printf("- - SSH connection closed.\n");
             }
 
             $linkSsh = null;
+            $linkSshAuthed = false;
             $linkSftp = null;
         }
         // >> SSH connection: Close
