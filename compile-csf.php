@@ -141,7 +141,7 @@ if (isset($argv) && is_array($argv) && $argv) {
                         showUsage(1);
                     }
 
-                    if (!file_exists($argSshKeyFile) || !is_file($argSshKeyFile) || !is_readable($argSshKeyFile)) {
+                    if (!file_exists($argSshKeyFile) || !is_file($argSshKeyFile) /*|| !is_readable($argSshKeyFile)*/) {
                         printf("[Error] %s SSH key file not found, not a file, or not readable.\n", $argKeyType);
                         showUsage(1);
                     }
@@ -166,7 +166,7 @@ if (isset($argv) && is_array($argv) && $argv) {
                         showUsage(1);
                     }
 
-                    if (!file_exists($sshKeyFilePasswordFile) || !is_file($sshKeyFilePasswordFile) || !is_readable($sshKeyFilePasswordFile)) {
+                    if (!file_exists($sshKeyFilePasswordFile) || !is_file($sshKeyFilePasswordFile) /*|| !is_readable($sshKeyFilePasswordFile)*/) {
                         printf("[Error] SSH key password file not found, not a file, or not readable.\n");
                         showUsage(1);
                     }
@@ -296,7 +296,7 @@ $serversFile = sprintf("%s.%s", substr(__FILE__, 0, strrpos(__FILE__, '.')), $se
 /** @var string $serversFileSample Servers list sample file. */
 $serversFileSample = sprintf("%s.sample.%s", substr(__FILE__, 0, strrpos(__FILE__, '.')), $serversFileType);
 
-if (!file_exists($serversFile) || !is_file($serversFile) || !is_readable($serversFile)) {
+if (!file_exists($serversFile) || !is_file($serversFile) /*|| !is_readable($serversFile)*/) {
     printf("[Error] Server list file \"%s\" not found, not a file, or not readable.\n", $serversFile);
 
     if (file_exists($serversFileSample) && is_file($serversFileSample)) {
