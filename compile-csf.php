@@ -741,6 +741,10 @@ foreach ($servers as $s => $server) {
                         case "centos8":
                         case "almalinux8":
                         case "cloudlinux8":
+                        case "rhel9":
+                        case "centos9":
+                        case "almalinux9":
+                        case "cloudlinux9":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
@@ -842,7 +846,9 @@ foreach ($servers as $s => $server) {
                         case "debian10":
                         case "debian11":
                         case "debian12":
+                        case "ubuntu-20.04":
                         case "ubuntu-22.04":
+                        case "ubuntu-24.04":
                             $server["csfConf"] = array_merge($server["csfConf"], [
                                 "CSF"               => "/usr/sbin/csf",
 
