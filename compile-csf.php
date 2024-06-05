@@ -636,7 +636,7 @@ foreach ($servers as $s => $server) {
                         case "centos6":
                         case "rhel6":
                         case "cloudlinux6":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
+                            $server["csfConf"] = array_merge([
                                 "CSF"               => "/usr/sbin/csf",
 
                                 "IPTABLES"          => "/sbin/iptables",
@@ -682,13 +682,13 @@ foreach ($servers as $s => $server) {
                                 "BIND_LOG"          => "/var/log/messages",
                                 "SYSLOG_LOG"        => "/var/log/messages",
                                 "WEBMIN_LOG"        => "/var/log/secure",
-                            ]);
+                            ], $server["csfConf"]);
                             break;
 
                         case "rhel7":
                         case "centos7":
                         case "cloudlinux7":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
+                            $server["csfConf"] = array_merge([
                                 "CSF"               => "/usr/sbin/csf",
 
                                 "IPTABLES"          => "/sbin/iptables",
@@ -734,7 +734,7 @@ foreach ($servers as $s => $server) {
                                 "BIND_LOG"          => "/var/log/messages",
                                 "SYSLOG_LOG"        => "/var/log/messages",
                                 "WEBMIN_LOG"        => "/var/log/secure",
-                            ]);
+                            ], $server["csfConf"]);
                             break;
 
                         case "rhel8":
@@ -745,7 +745,7 @@ foreach ($servers as $s => $server) {
                         case "centos9":
                         case "almalinux9":
                         case "cloudlinux9":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
+                            $server["csfConf"] = array_merge([
                                 "CSF"               => "/usr/sbin/csf",
 
                                 "IPTABLES"          => "/usr/sbin/iptables",
@@ -791,12 +791,12 @@ foreach ($servers as $s => $server) {
                                 "BIND_LOG"          => "/var/log/messages",
                                 "SYSLOG_LOG"        => "/var/log/messages",
                                 "WEBMIN_LOG"        => "/var/log/secure",
-                            ]);
+                            ], $server["csfConf"]);
                             break;
 
                         case "debian8":
                         case "ubuntu-16.04":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
+                            $server["csfConf"] = array_merge([
                                 "CSF"               => "/usr/sbin/csf",
 
                                 "IPTABLES"          => "/sbin/iptables",
@@ -839,7 +839,7 @@ foreach ($servers as $s => $server) {
                                 "BIND_LOG"          => "/var/log/messages",
                                 "SYSLOG_LOG"        => "/var/log/syslog",
                                 "WEBMIN_LOG"        => "/var/log/auth.log",
-                            ]);
+                            ], $server["csfConf"]);
                             break;
 
                         case "debian9":
@@ -849,7 +849,7 @@ foreach ($servers as $s => $server) {
                         case "ubuntu-20.04":
                         case "ubuntu-22.04":
                         case "ubuntu-24.04":
-                            $server["csfConf"] = array_merge($server["csfConf"], [
+                            $server["csfConf"] = array_merge([
                                 "CSF"               => "/usr/sbin/csf",
 
                                 "IPTABLES"          => "/usr/sbin/iptables",
@@ -892,7 +892,7 @@ foreach ($servers as $s => $server) {
                                 "BIND_LOG"          => "/var/log/messages",
                                 "SYSLOG_LOG"        => "/var/log/syslog",
                                 "WEBMIN_LOG"        => "/var/log/auth.log",
-                            ]);
+                            ], $server["csfConf"]);
                             break;
                     }
 
