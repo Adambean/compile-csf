@@ -83,7 +83,7 @@ try {
     exit(1);
 }
 
-if (!$sshFingerprint = trim(ssh2_fingerprint($linkSsh, SSH2_FINGERPRINT_SHA1 | SSH2_FINGERPRINT_HEX))) {
+if ("" === ($sshFingerprint = trim(strval(ssh2_fingerprint($linkSsh, SSH2_FINGERPRINT_SHA1|SSH2_FINGERPRINT_HEX))))) {
     printf("[Error] SSH server did not return a fingerprint.\n");
     exit(1);
 }
