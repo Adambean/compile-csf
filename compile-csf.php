@@ -74,6 +74,8 @@ $serversToActionNum = 0;
 $serversFileType = "yml";
 /** @var string $serversFileType Server list file types that are supported. (This should be a constant really.) */
 $serversFileTypes = ["json", "yml", "yaml"];
+/** @var bool $enableDownload Try to download for merges? (Lists for allow/deny.) */
+$enableDownload = true;
 /** @var bool $enableUpload Try to upload after compilation? */
 $enableUpload = true;
 /** @var bool $enableRestart Restart CSF and LFD after upload? */
@@ -104,6 +106,8 @@ function showUsage(?int $exitCode = 0): void
     printf("\t--servers=name1,name2,...   Only action specific servers. (Split multiple with a comma.)\n");
     printf("\t--serversfiletype=type      Server list file type. (Type can be json, yml, or yaml.)\n");
     printf("\n");
+    printf("\t--download                  Enable download for merges. (Lists for allow and deny.)\n");
+    printf("\t--nodownload                Disable download for merges. (Lists for allow and deny.)\n");
     printf("\t--upload                    Enable upload after compilation.\n");
     printf("\t--noupload                  Disable upload after compilation.\n");
     printf("\t--restart                   Enable service restart after upload.\n");
@@ -205,6 +209,16 @@ if (isset($argv) && is_array($argv) && $argv) {
                     $serversToActionNum = count($serversToAction);
 
                     printf("Only the following %d server(s) will be actioned: %s\n", $serversToActionNum, implode(", ", $serversToAction));
+                    break;
+
+                case "download":
+                    $enableDownload = true;
+                    printf("Download enabled.\n");
+                    break;
+
+                case "nodownload":
+                    $enableDownload = false;
+                    printf("Download disabled.\n");
                     break;
 
                 case "upload":
@@ -541,12 +555,14 @@ foreach ($servers as $s => $server) {
                 case "csf.allow":
                 case "csf.deny":
                     // << Merge server-specific lines into a template
-                    printf("- - Checking for file \"%s\" on remote server...\n", $c);
-                    if (file_exists($rPathF)) {
-                        if (!ssh2_scp_recv($linkSsh, $rPath, $lPath)) {
-                            printf("- - - Found on remote server, but couldn't download it!\n");
+                    if ($enableDownload) {
+                        printf("- - Checking for file \"%s\" on remote server...\n", $c);
+                        if (file_exists($rPathF)) {
+                            if (!ssh2_scp_recv($linkSsh, $rPath, $lPath)) {
+                                printf("- - - Found on remote server, but couldn't download it!\n");
+                            }
+                            printf("- - - Downloaded from remote server.\n");
                         }
-                        printf("- - - Downloaded from remote server.\n");
                     }
 
                     if (!file_exists($lPath) || !is_file($lPath) || filesize($lPath) < 1) {
