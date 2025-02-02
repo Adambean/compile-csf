@@ -455,8 +455,9 @@ foreach ($servers as $s => $server) {
                 isset($server[$k])
                 && is_scalar($server[$k])
                 && "" !== trim(strval($server[$k]))
-                && is_resource($linkSsh = ssh2_connect($serverAddress, $server["portSsh"]))
+                && is_resource($linkSsh = ssh2_connect($server[$k], $server["portSsh"]))
             ) {
+                $serverAddress = $server[$k];
                 break; // Connection established
             }
         }
@@ -465,7 +466,7 @@ foreach ($servers as $s => $server) {
             throw new \RuntimeException("SSH connection failed.");
         }
 
-        printf("- - SSH connection established.\n");
+        printf("- - SSH connection established to \"%s\".\n", $serverAddress);
 
         $sshFingerprint = trim(strval(ssh2_fingerprint($linkSsh, SSH2_FINGERPRINT_SHA1|SSH2_FINGERPRINT_HEX)));
         if ("" === $sshFingerprint) {
