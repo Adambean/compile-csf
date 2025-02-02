@@ -454,10 +454,9 @@ foreach ($servers as $s => $server) {
             if (
                 isset($server[$k])
                 && is_scalar($server[$k])
-                && "" !== trim(strval($server[$k]))
-                && is_resource($linkSsh = ssh2_connect($server[$k], $server["portSsh"]))
+                && "" !== ($serverAddress = trim(strval($server[$k])))
+                && is_resource($linkSsh = ssh2_connect($serverAddress, $server["portSsh"]))
             ) {
-                $serverAddress = $server[$k];
                 break; // Connection established
             }
         }
