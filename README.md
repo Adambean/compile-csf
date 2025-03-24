@@ -205,6 +205,12 @@ The location on your server where CSF's configurations are stored. In nearly all
 
 This will be reflected in the locally compiled configuration this tool builds for this server.
 
+### noClusterRules
+
+If set and is `true`, exclude this server from runtime allow/deny rule sharing. This is for both manual commands and automatic detections.
+
+The default stance is that all servers will share allow/deny rules with each other at runtime.
+
 ### csfConf
 
 This is an object of CSF configurations you want to define for this server only.
