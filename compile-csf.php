@@ -372,6 +372,10 @@ foreach ($servers as $s => $server) {
         continue;
     }
 
+    if (isset($server["noClusterRules"]) && $server["noClusterRules"]) {
+        continue;
+    }
+
     foreach (["ipv4", "ipv6"] as $k) {
         if (isset($server[$k]) && is_string($server[$k]) && "" !== ($clusterMemberAddress = trim($server[$k]))) {
             $allServersAsCluster[] = $clusterMemberAddress;
@@ -635,8 +639,8 @@ foreach ($servers as $s => $server) {
                             $server["csfConf"] = [];
                         }
 
-                        // Cluster members
-                        if ($allServersAsClusterString) {
+                        // Cluster members: Rule sharing at runtime
+                        if ((!isset($server["noClusterRules"]) || !$server["noClusterRules"]) && $allServersAsClusterString) {
                             $server["csfConf"]["CLUSTER_SENDTO"]    = $allServersAsClusterString;
                             $server["csfConf"]["CLUSTER_RECVFROM"]  = $allServersAsClusterString;
                         }
